@@ -1,0 +1,79 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.min.js"></script>
+
+<body>
+    <script>
+        var y = 1;
+        var x = 0.5;
+        var inc = 0.005;
+
+        function setup() {
+            createCanvas(1000, 1000);
+            background(000)
+            frameRate(10000)
+        }
+
+        function draw() {
+            let prev_x = x;
+            let prev_y = y;
+            x = x + .25
+            y = y + y * inc;
+
+            noFill();
+            stroke(255, 0, 0, 255);
+            strokeWeight(5);
+            line(prev_x, height - prev_y, x, height - y);
+        }
+    </script>
+
+</body>
+
+</html> -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Line Graph with CanvasJS</title>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+</head>
+<body>
+    <div id="chartContainer" style="height: 300px; width: 100%;"></div>
+
+    <script>
+        // Define your data points
+        var dataPoints = [
+            { x: 0, y: 0 },
+            { x: 1, y: 1 },
+            { x: 2, y: 2 },
+            { x: 3, y: 3 },
+            { x: 4, y: 4 },
+        ];
+
+        // Create the chart
+        var chart = new CanvasJS.Chart("chartContainer", {
+            title: {
+                text: "Line Graph"
+            },
+            axisX: {
+                title: "X-Axis"
+            },
+            axisY: {
+                title: "Y-Axis"
+            },
+            data: [{
+                type: "line",
+                dataPoints: dataPoints
+            }]
+        });
+
+        // Render the chart
+        chart.render();
+    </script>
+</body>
+</html>

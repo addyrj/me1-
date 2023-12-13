@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Crash Game Line Chart</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+</head>
+
+<body>
+    <script>
+        let stoppingMultiplier;
+        let multiplier = 1.0;
+        let speed = 0.0018;
+        let counter = 0;
+        let startPoint, endPoint;
+        let users = ['User1', 'User2', 'User3', 'User4', 'User5', 'shiva', 'testuser'];
+        let cashOutGraphics = [];
+        let cashOutSpeed = 3;
+        let gravity = 0.1;
+
+        function setup() {
+            createCanvas(windowWidth, windowHeight);
+            stoppingMultiplier = 1 + random(1);
+
+            startPoint = createVector(50, height - 50);
+            endPoint = createVector(startPoint.x, startPoint.y);
+
+            frameRate(60);
+        }
+
+        function draw() {
+            background(255);
+
+            endPoint.x = startPoint.x + (width - startPoint.x) * (multiplier - 1);
+            endPoint.y = startPoint.y - (startPoint.y - 50) * (multiplier - 1);
+            endPoint.x = min(endPoint.x, width - 50);
+            endPoint.y = max(endPoint.y, 50);
+
+            drawAxes();
+            drawScale();
+            drawGradientLine();
+
+            multiplier += speed;
+            counter += 1 / 60;
+
+            if (random() < 0.05 && users.length > 0) {
+                let userIndex = floor(random(users.length));
+                let cashOutText = users[userIndex] + ' cashed out at ' + nf(multiplier, 0, 2) + 'x';
+                let cashOutGraphic = createP(cashOutText);
+                cashOutGraphic.position(endPoint.x, endPoint.y);
+                cashOutGraphic.style('font-size', '16px');
+                cashOutGraphic.style('color', '#0000FF');
+                cashOutGraphic.speed = cashOutSpeed;
+                cashOutGraphic.gravity = gravity;
+                cashOutGraphics.push(cashOutGraphic);
+                users.splice(userIndex, 1);
+            }
+
+            for (let i = cashOutGraphics.length - 1; i >= 0; i--) {
+                let cashOutGraphic = cashOutGraphics[i];
+                cashOutGraphic.position(cashOutGraphic.position().x, cashOutGraphic.position().y + cashOutGraphic.speed);
+                cashOutGraphic.speed += cashOutGraphic.gravity;
+                cashOutGraphic.style('opacity', str(float(cashOutGraphic.style('opacity')) - 0.01));
+                if (float(cashOutGraphic.style('opacity')) <= 0) {
+                    cashOutGraphic.remove();
+                    cashOutGraphics.splice(i, 1);
+                }
+            }
+
+            if (multiplier >= stoppingMultiplier) {
+                noLoop();
+                setTimeout(restartGame, 5000);
+            }
+        }
+
+        function drawAxes() {
+            stroke(0);
+            strokeWeight(2);
+            line(50, height - 50, width - 50, height - 50);
+            line(50, height - 50, 50, 50);
+        }
+
+        function drawScale() {
+            stroke(0, 0, 0, 128);
+            for (let i = 1; i <= 10; i++) {
+                let x = map(i, 1, 10, 50, width - 50);
+                let y = map(i, 1, 10, height - 50, 50);
+                line(x, height - 45, x, height - 55);
+                line(45, y, 55, y);
+            }
+        }
+
+        function drawGradientLine() {
+            noFill();
+            let gradientSegments = 100;
+            let controlPoint = createVector((startPoint.x + endPoint.x) / 2, startPoint.y);
+            let useQuadraticCurve = multiplier > 1.24;
+
+            for (let i = 0; i <= gradientSegments; i++) {
+                let t = i / gradientSegments;
+                let color = lerpColor(color1, color2, t);
+                stroke(color);
+                strokeWeight(8);
+
+                let x, y;
+                if (!useQuadraticCurve) {
+                    x = lerp(startPoint.x, endPoint.x, t);
+                    y = lerp(startPoint.y, endPoint.y, t);
+                } else {
+                    x = bezierPoint(startPoint.x, controlPoint.x, endPoint.x, t);
+                    y = bezierPoint(startPoint.y, controlPoint.y, endPoint.y, t);
+                }
+
+                point(x, y);
+            }
+        }
+
+        function restartGame() {
+            multiplier = 1.0;
+            users = ['User1', 'User2', 'User3', 'User4', 'User5', 'shiva', 'testuser'];
+            for (let cashOutGraphic of cashOutGraphics) {
+                cashOutGraphic.remove();
+            }
+            cashOutGraphics = [];
+            counter = 0;
+            endPoint = createVector(startPoint.x, startPoint.y);
+            loop();
+        }
+    </script>
+</body>
+
+</html>
